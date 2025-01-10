@@ -1,0 +1,72 @@
+﻿﻿
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+@page "/personal"
+
+<PageTitle>Persons</PageTitle>
+
+<FluentBreadcrumb>
+    <FluentBreadcrumbItem Href="/personal">Persons</FluentBreadcrumbItem>
+</FluentBreadcrumb>
+
+<FluentLabel Typo="Typography.PageTitle" Style="margin: 20px auto"> Persons </FluentLabel>
+
+<FluentStack Orientation="Orientation.Horizontal" Style="margin: 20px auto">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Start">
+        <FluentButton OnClick="@(async () => await ShowDialogAsync())" Appearance="Appearance.Accent">New</FluentButton>
+    </FluentStack>
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" VerticalAlignment="VerticalAlignment.Center">
+        <FluentSwitch @bind-Value="Active"
+                      @bind-Value:after="_grid.RefreshDataAsync"
+                      CheckedMessage="Active"
+                      UncheckedMessage="Archived" />
+        <FluentSearch Placeholder="Search" @bind-Value="SearchKey" @bind-Value:after="_grid.RefreshDataAsync" AutoComplete="off" />
+    </FluentStack>
+</FluentStack>
+
+<FluentDivider />
+
+<FluentCard Height="500px" Style="overflow-y:scroll;">
+    <FluentDataGrid @ref="_grid"
+                    ItemsProvider="gridItemsProvider"
+                    ItemSize="50"
+                    TGridItem="PersonalViewModel"
+                    Pagination="pagination"
+                    GenerateHeader="GenerateHeaderOption.Sticky">
+        <PropertyColumn Property="@(c => c.FirstName)" />
+        <PropertyColumn Property="@(c => c.LastName)" />
+        <TemplateColumn Width="200px" Title="Date of Birth">
+            @{
+                if(context.DateOfBirth.HasValue)
+                {
+                    <span>@context.DateOfBirth.Value.ToDate()</span>
+                }
+            }
+        </TemplateColumn>
+        <TemplateColumn Width="200px" Title="Date Created">
+            @{
+                <span>@context.DateCreated.ToDateWithFullTime()</span>
+            }
+        </TemplateColumn>
+        <TemplateColumn Width="200px" Title="Date Modified">
+            @{
+                if (context.DateModified.HasValue)
+                {
+                    <span>@context.DateModified.Value.ToDateWithFullTime()</span>
+                }
+            }
+        </TemplateColumn>
+        <TemplateColumn Width="200px" Title="Date Archive">
+            @{
+                if (context.DateDeleted.HasValue)
+                {
+                    <span>@context.DateDeleted.Value.ToDateWithFullTime()</span>
+                }
+            }
+        </TemplateColumn>
+        <TemplateColumn Width="150px" Title="Actions" Align="@Align.End">
+            <FluentButton aria-label="Edit" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@(async () => await ShowDialogAsync(context))" />
+            <FluentButton aria-label="Delete" IconEnd="@(Active ? new Icons.Regular.Size16.Delete() : new Icons.Regular.Size16.ArchiveArrowBack())" OnClick="@(async () => await ArchiveAsync(context))" />
+        </TemplateColumn>
+    </FluentDataGrid>
+</FluentCard>
+<FluentPaginator State="@pagination" />

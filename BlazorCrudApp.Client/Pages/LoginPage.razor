@@ -1,0 +1,32 @@
+﻿@page "/login"
+@layout AuthLayout
+
+<div class="flex form-container flex-column align-items-center justify-content-center h-100vh row-gap position-relative">
+    <div class="container">
+        <FluentStack Style="margin:20px auto;" Width="400px" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" Orientation="Orientation.Vertical">
+            <span class="text-center" style="color:#ffffff">Login to your account</span>
+        </FluentStack>
+        <FluentStack VerticalGap="50" Width="400px" VerticalAlignment="VerticalAlignment.Center" Orientation="Orientation.Vertical">
+            <FluentCard>
+                <EditForm Model="Model" novalidate>
+                    <FluentTextField Style="width: 100%;" @bind-Value="Model.Email" Label="@nameof(Model.Email)" Required />
+                    <FluentTextField Style="width: 100%;" @bind-Value="Model.Password" Label="@nameof(Model.Password)" TextFieldType="TextFieldType.Password" Required />
+                    <div style="color: var(--error);">
+                        <FluentValidationValidator @ref="FluentValidationValidator" Options="@(o => o.IncludeAllRuleSets())" />
+                    </div>
+                    @if(Message.IsNotEmpty())
+                    {
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" Orientation="Orientation.Vertical">
+                            <div style="color: var(--error);">
+                                @Message
+                            </div>
+                        </FluentStack>
+                    }
+                    <FluentStack Style="margin: 10px auto;">
+                        <FluentButton Style="width: 100%;" Loading="IsBusy" OnClick="SubmitAsync" Appearance="Appearance.Accent">Login</FluentButton>
+                    </FluentStack>
+                </EditForm>
+            </FluentCard>
+        </FluentStack>
+    </div>
+</div>

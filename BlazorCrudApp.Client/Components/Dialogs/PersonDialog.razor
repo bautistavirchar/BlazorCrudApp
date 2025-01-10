@@ -1,0 +1,87 @@
+﻿﻿@using BlazorCrudApp.Shared.Models
+﻿@using BlazorCrudApp.Client.Services
+@using Icons = Microsoft.FluentUI.AspNetCore.Components.Icons
+
+@implements IDialogContentComponent<PersonalModel>
+
+<!-- Header -->
+<FluentDialogHeader ShowDismiss="true">
+    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        <FluentIcon Value="@(new Icons.Regular.Size24.Status())" />
+        <FluentLabel Typo="Typography.PaneHeader">
+            @Dialog.Instance.Parameters.Title
+        </FluentLabel>
+    </FluentStack>
+</FluentDialogHeader>
+
+<!-- Body -->
+<FluentDialogBody>
+    <EditForm Model="Content" novalidate>
+        <FluentTextField @bind-Value="Content.FirstName" Label="@nameof(Content.FirstName)" />
+        <FluentTextField @bind-Value="Content.LastName" Label="@nameof(Content.LastName)" />
+        <FluentDatePicker @bind-Value="Content.DateOfBirth" Label="@nameof(Content.DateOfBirth)"/>
+        <div style="color: var(--error);">
+            <FluentValidationValidator @ref="_fluentValidationValidator" Options="@(o => o.IncludeAllRuleSets())" />
+        </div>
+    </EditForm>
+</FluentDialogBody>
+
+<!-- Footer -->
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Accent" OnClick="@SaveAsync">Save</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="@CancelAsync">Cancel</FluentButton>
+</FluentDialogFooter>
+
+@inject IToastService ToastService
+@inject IPersonalService PersonalService
+@code {
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; } = default!;
+
+    FluentValidationValidator _fluentValidationValidator = default!;
+
+    [Parameter]
+    public PersonalModel Content { get; set; } = default!;
+
+    private async Task SaveAsync()
+    {
+        if (await _fluentValidationValidator.ValidateAsync())
+        {
+            // call api...
+            if (Content.Id == 0)
+                await AddAsync();
+            else
+                await UpdateAsync();
+        }
+    }
+
+    async Task AddAsync()
+    {
+        var response = await PersonalService.AddAsync(Content);
+        if (response.Success)
+        {
+            ToastService.ShowSuccess("Successfully saved.");
+            Content.Id = response.Data;
+            await Dialog.CloseAsync(Content);
+            return;
+        }
+        ToastService.ShowError(response.ErrorMessage);
+    }
+
+    async Task UpdateAsync()
+    {
+        var response = await PersonalService.UpdateAsync(Content);
+        if (response.Success)
+        {
+            ToastService.ShowSuccess("Changes saved.");
+            await Dialog.CloseAsync(Content);
+            return;
+        }
+        ToastService.ShowError(response.ErrorMessage);
+    }
+
+    private async Task CancelAsync()
+    {
+        await Dialog.CancelAsync();
+    }
+}

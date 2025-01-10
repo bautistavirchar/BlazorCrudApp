@@ -1,0 +1,51 @@
+﻿﻿h4 {
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+p {
+    color: #fff;
+}
+
+    p a {
+        color: #fff;
+        text-decoration: underline;
+    }
+
+.card {
+    width: 400px;
+}
+
+    .card button {
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+
+img.imglogo {
+    width: 140px;
+}
+
+.btn-primary, ::deep .form-control {
+    height: 36px;
+}
+
+::deep ul.validation-errors {
+    display: none;
+}
+
+::deep .alert-danger {
+    background: red;
+    border: none;
+    padding: 1px 5px;
+}
+
+    ::deep .alert-danger p {
+        margin: 0;
+        padding: 0;
+        color: #fff;
+        font-weight: bold;
+    }
